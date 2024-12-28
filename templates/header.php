@@ -1,5 +1,6 @@
 <?php
 require_once 'lib/config.php';
+require_once 'lib/pdo.php';
 
 $currentPage = basename($_SERVER['SCRIPT_NAME']);
 
@@ -30,7 +31,9 @@ $currentPage = basename($_SERVER['SCRIPT_NAME']);
 
             <ul class="nav nav-pills col-12 col-md-auto mb-2 justify-content-center mb-md-0">
                 <?php foreach ($mainMenu as $key => $value) { ?>
-                    <li class="nav-item"><a href="<?= $key ?>" class="nav-link <?php if($currentPage === $key) {echo 'active';} ?>"><?= $value ?></a></li>
+                    <li class="nav-item"><a href="<?= $key ?>" class="nav-link <?php if ($currentPage === $key) {
+                                                                                    echo 'active';
+                                                                                } ?>"><?= $value ?></a></li>
                 <?php } ?>
 
             </ul>
