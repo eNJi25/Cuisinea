@@ -1,11 +1,5 @@
 <?php
 
-$recipes = [
-    ['title' => 'Mousse au chocolat', 'description' => 'Une super mousse pour les petits comme pour les grands.', 'image' => '1-chocolate-au-mousse.jpg'],
-    ['title' => 'Gratin Dauphinois', 'description' => 'Pour les amateurs de pomme de terre, c\'est trés bon!', 'image' => '2-gratin-dauphinois.jpg'],
-    ['title' => 'Salade', 'description' => 'Pour de nouveau rentrer dans ses jeans, c\'est la recette idéal!!', 'image' => '3-salade.jpg'],
-];
-
 function getRecipeByID(PDO $pdo, int $id)
 {
 
@@ -15,11 +9,38 @@ function getRecipeByID(PDO $pdo, int $id)
     return $query->fetch();
 }
 
-function getRecipeImage(string $image)
+function getRecipeImage(string|null $image)
 {
     if ($image === null) {
         return ASSETS_IMG_PATH . 'recipe_default.jpg';
     } else {
         return RECIPE_IMG_PATH . $image;
     }
+}
+
+function getRecipes(PDO $pdo, int $limit = null ){
+    $sql = "SELECT * FROM recipes ORDER BY id DESC";
+
+    if ($limit) {
+        $sql .= ' LIMIT :limit';
+    }
+
+    $query = $pdo->prepare($sql);
+    if ($limit){
+        $query->bindParam(':limit', $limit, PDO::PARAM_INT);
+    }
+    $query->execute();
+    return $query->fetchAll();
+}
+
+function saveRecipe(PDO $pdo, int $category, string $title, string $description, string $ingredients, string $instructions, string|null $image){
+    $sql = "INSERT INTO `recipes` (`id`, `category_id`, `title`, `description`, `ingredients`, `instructions`, `image`) VALUES (NULL, :category_id, :title, :description, :ingredients, :instructions, :image)";
+    $query = $pdo->prepare($sql);
+    $query->bindParam(':category_id', $category, PDO::PARAM_INT);
+    $query->bindParam(':title', $title, PDO::PARAM_STR);
+    $query->bindParam(':description', $description, PDO::PARAM_STR);
+    $query->bindParam(':ingredients', $ingredients, PDO::PARAM_STR);
+    $query->bindParam(':instructions', $instructions, PDO::PARAM_STR);
+    $query->bindParam(':image', $image, PDO::PARAM_STR);
+    return $query->execute();
 }
